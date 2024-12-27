@@ -46,20 +46,17 @@ int	main()
 	}
 
 	std::vector<int> update;
-	for(std::size_t i{0}; getline(in, line); ++i)
+	const auto cmp = [&priorities](const auto& lhs, const auto& rhs)
+	{
+		return !breaks_ordering_rules(lhs, priorities[rhs]);
+	};
+	while(getline(in, line))
 	{
 		update = get_update(line);
-		bool rearranged{false};
-		for(std::size_t j{1}; j<update.size(); ++j)
-		{
-			for(std::size_t g{j}; breaks_ordering_rules(update[g-1], priorities[update[g]]); --g)
-			{
-				rearranged = true;
-				std::swap(update[g], update[g-1]);
-			}
-		}
-		if(rearranged)
-			result += update[update.size()/2];
+		if(std::ranges::is_sorted(update, cmp))
+			continue;
+		std::ranges::sort(update, cmp);
+		result += update[update.size()/2];
 	}
-	std::cout << result;
+	std::cout << result << "\n";
 }
