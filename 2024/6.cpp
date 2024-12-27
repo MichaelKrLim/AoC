@@ -63,7 +63,7 @@ bool valid_position(const Position& position, const auto& board)
 
 int main()
 {
-    Position guard_position{}, starting_position;
+    Position guard_position(0,0, Direction::north), starting_position;
     std::unordered_set<Position> visited{};
     long long result{0};
     std::vector<std::vector<bool>> board{};
@@ -87,28 +87,29 @@ int main()
         }
         board.push_back(row);
     }
-
+    std::cout << board.size() << ' ' << board[0].size();
     starting_position = guard_position;
     do
     {
+        // std::cout << guard_position.x << ' ' << guard_position.y << "\n";
         if(!visited.contains(guard_position))
         {
             ++result;
-            visited.insert({guard_position.x, guard_position.y});
+            visited.insert(Position(guard_position.x, guard_position.y, guard_position.direction));
         }
 
         Position next_position = move(guard_position);
         for(int i{0}; i<4; ++i)
         {
-            if(!valid_position(next_position, board))
+            if(board[next_position.x][next_position.y] == true)
             {
-                std::cout << result << "\n";
-                return 0;
-            }
-            else if(board[next_position.x][next_position.y] == true)
-            {
-                guard_position = turn(next_position);
-                next_position = move(guard_position);
+                if(!valid_position(next_position, board))
+                {
+                    std::cout << result << "\n";
+                    return 0;
+                }
+                next_position = turn(next_position);
+                next_position = move(next_position);
             }
         }
         guard_position = next_position;
